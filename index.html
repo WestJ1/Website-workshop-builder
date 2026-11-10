@@ -411,12 +411,6 @@ if(ok3d){let first=true;
   if(first){first=false;fit('overview')}dirty=true}).observe(cv);
  (function loop(){requestAnimationFrame(loop);if(dirty){dirty=false;R_.render(scene,camera)}})();
 }
-
-// starting layout: a Class 4 bay with a car on the lift
-renderCat();buildRoom();
-[['lift4',0,.5],['refcar',0,.5],['brake4',0,3.9],['head',-1.8,-5.3],['emis',1.8,-5.3]].forEach(([k,x,z])=>state.items.push({id:state.nid++,k,x,z,rot:0}));
-sync();
-})();
 </script>
 
 </body></html>
