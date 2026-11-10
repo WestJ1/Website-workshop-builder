@@ -1,0 +1,401 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Bay Builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 3D stage on the left, controls on the right, review form underneath. Stacks to one column on phones. */
+:root{
+  --bg:#f4f4f4; --surface:#ffffff; --ink:#1a1a1a; --muted:#5c5c5c; --line:#d6d6d6;
+  --accent:#ed1c24; --accent-ink:#ffffff; --bad:#b45309; --ok:#1f7a45;
+  --scene-bg:#e6e6e6; --floor:#f7f7f7; --grid:#d0d0d0; --wall:#6b6b6b;
+  --display:'Barlow',system-ui,sans-serif;
+  --body:'Barlow',system-ui,sans-serif;
+  --mono:'Barlow',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1a1a1a; --surface:#242424; --ink:#ffffff; --muted:#a8a8a8; --line:#3a3a3a;
+  --bad:#fbbf24; --ok:#5cc58a; --scene-bg:#111111; --floor:#262626; --grid:#3a3a3a; --wall:#8a8a8a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1a1a; --surface:#242424; --ink:#ffffff; --muted:#a8a8a8; --line:#3a3a3a;
+  --bad:#fbbf24; --ok:#5cc58a; --scene-bg:#111111; --floor:#262626; --grid:#3a3a3a; --wall:#8a8a8a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+h1,h2{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:0;text-wrap:balance}
+h1{font-size:2rem;line-height:1}
+h2{font-size:1.15rem;margin-bottom:8px}
+.top{max-width:1280px;margin:0 auto 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.top p{margin:0;color:var(--muted);font-size:.9rem}
+.app,.review{max-width:1280px;margin:0 auto;display:grid;gap:16px 24px}
+.app{grid-template-columns:minmax(0,1fr) 22rem}
+.review{margin-top:24px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:2px solid var(--ink);padding-top:16px}
+.stage{align-self:start;position:sticky;top:12px}
+@media (max-width:860px){.app,.review{grid-template-columns:minmax(0,1fr)}.stage{position:static}}
+.view{position:relative;height:clamp(320px,62vh,640px);background:var(--scene-bg);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
+.viewbar,.zoom{position:absolute;display:flex;flex-wrap:wrap;gap:4px}
+.viewbar{top:8px;left:8px;right:8px}.zoom{bottom:8px;right:8px}
+.hint{position:absolute;left:8px;bottom:8px;max-width:calc(100% - 130px);font:13px/1.35 var(--mono);color:var(--muted);pointer-events:none}
+.btn{font:inherit;font-size:.9rem;padding:6px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:3px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary{text-transform:uppercase;letter-spacing:.04em;background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.panel{min-width:0}
+.sec{border-top:1px solid var(--line);padding-block:14px}
+.sec:first-child{border-top:0;padding-top:0}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.seg label{border:1px solid var(--line);background:var(--surface);border-radius:3px;padding:8px;cursor:pointer;display:block;min-width:0}
+.seg input{position:absolute;opacity:0}
+.seg label:has(input:checked){background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg label:has(input:focus-visible){outline:2px solid var(--ink);outline-offset:2px}
+.seg b{display:block;font-weight:600}.seg small{display:block;font-size:.78rem;line-height:1.3;opacity:.8}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+label.f{display:grid;gap:2px;font-size:.85rem;color:var(--muted)}
+input[type=number],input[type=text],input[type=email],input[type=tel],select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 8px;width:100%;min-width:0}
+textarea{min-height:80px;resize:vertical}
+.row2{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:.9rem}
+.cat h3{font:600 .75rem var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+.cat .btn,.list .row{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;margin-bottom:4px}
+.m{font:500 13px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+ul{list-style:none;margin:0;padding:0}
+.list .row{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 10px;border-radius:3px;cursor:pointer;font:inherit;font-size:.9rem}
+.list .row[aria-current="true"]{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--accent)}
+.empty{color:var(--muted);font-size:.9rem;margin:0}
+.issues{margin-top:10px;font-size:.9rem}
+.issues li{color:var(--bad);padding:2px 0}.issues .ok{color:var(--ok)}
+#selbox{border:1px solid var(--ink);border-radius:3px;padding:10px;margin-top:10px}
+#selbox p{margin:0 0 4px}
+pre{font:14px/1.5 var(--mono);font-variant-numeric:tabular-nums;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:12px;overflow-x:auto;white-space:pre-wrap;margin:0;max-height:360px;overflow-y:auto}
+form{display:grid;gap:10px;min-width:0}
+.note{font-size:.85rem;color:var(--muted)}
+#msg{min-height:1.4em;font-size:.9rem}
+</style>
+
+<header class="top">
+  <h1>Bay Builder</h1>
+  <p>Beta. Lay out an MOT bay in 3D. Sizes are estimates, so treat it as a guide and not a technical drawing.</p>
+</header>
+
+<main class="app">
+  <section class="stage" style="min-width:0">
+    <div class="view" id="view">
+      <canvas id="c" tabindex="0" aria-label="3D bay layout"></canvas>
+      <div class="viewbar" role="group" aria-label="Camera views">
+        <button class="btn" data-v="overview" aria-pressed="true">Overview</button>
+        <button class="btn" data-v="entrance" aria-pressed="false">Entrance</button>
+        <button class="btn" data-v="end" aria-pressed="false">End wall</button>
+        <button class="btn" data-v="side" aria-pressed="false">Side</button>
+        <button class="btn" data-v="plan" aria-pressed="false">Plan</button>
+      </div>
+      <p class="hint">Drag equipment to move it. Drag empty floor to turn the view. Shift-drag or right-drag to slide it. Arrows nudge, R rotates, Delete removes.</p>
+      <div class="zoom">
+        <button class="btn" id="zin" aria-label="Zoom in">+</button>
+        <button class="btn" id="zout" aria-label="Zoom out">&minus;</button>
+        <button class="btn" id="fit">Fit to bay</button>
+      </div>
+    </div>
+    <ul class="issues" id="issues" aria-live="polite"></ul>
+  </section>
+
+  <aside class="panel">
+    <div class="sec">
+      <h2>What will the bay test?</h2>
+      <div class="seg" role="radiogroup">
+        <label><input type="radio" name="cls" value="1" id="cls1"><b>Class 1 &amp; 2</b><small>Motorcycles</small></label>
+        <label><input type="radio" name="cls" value="4" checked><b>Class 4</b><small>Cars and light vans</small></label>
+        <label><input type="radio" name="cls" value="47"><b>Class 4 &amp; 7</b><small>Cars and vans</small></label>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Bay size</h2>
+      <div class="row2" style="margin:0 0 8px">
+        <button class="btn" data-w="5">Standard</button><button class="btn" data-w="8">Double width</button><button class="btn" data-w="11">Triple width</button>
+      </div>
+      <div class="fields">
+        <label class="f">Width (m)<input type="number" id="w" value="5" min="3" max="20" step="0.5"></label>
+        <label class="f">Length (m)<input type="number" id="l" value="12" min="5" max="30" step="0.5"></label>
+        <label class="f">Ceiling height (m)<input type="number" id="h" value="4" min="2.5" max="8" step="0.1"></label>
+        <label class="f">Vehicle door width (m)<input type="number" id="door" value="3" min="1" max="6" step="0.1"></label>
+      </div>
+      <label class="chk"><input type="checkbox" id="drive"> Drive-through: add a matching door at the far end</label>
+    </div>
+
+    <div class="sec">
+      <h2>Add equipment</h2>
+      <div class="cat" id="cat"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Your bay <span id="count" class="m">0</span></h2>
+      <div class="list"><ul id="list"></ul></div>
+      <div id="selbox" hidden></div>
+      <div class="row2"><button class="btn" id="undo">Undo</button><button class="btn" id="clear">Clear all</button></div>
+    </div>
+  </aside>
+</main>
+
+<section class="review" aria-labelledby="rv">
+  <div style="min-width:0">
+    <h2 id="rv">Review your layout</h2>
+    <p class="note">This is an illustrative configuration. Sizes are estimates and need checking by a technician before any quote.</p>
+    <label class="f" style="margin-top:10px">Type of test lane
+      <select id="lane"><option>Standard bay</option><option>ATL or OPTL</option><option>Not sure yet</option></select>
+    </label>
+    <label class="f" style="margin-top:10px">Project notes<textarea id="notes" placeholder="Anything we should know about the building, floor or timing"></textarea></label>
+    <form id="form" style="margin-top:14px">
+      <div class="fields">
+        <label class="f">Name<input type="text" id="fname" required autocomplete="name"></label>
+        <label class="f">Email<input type="email" id="femail" required autocomplete="email"></label>
+        <label class="f">Phone (optional)<input type="tel" id="fphone" autocomplete="tel"></label>
+      </div>
+      <div class="row2" style="margin:0"><button class="btn primary" type="submit">Request a review</button><button class="btn" type="button" id="copy">Copy summary</button></div>
+      <p id="msg" role="status"></p>
+    </form>
+  </div>
+  <div style="min-width:0">
+    <h2>Summary</h2>
+    <pre id="sum"></pre>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)), snap=v=>Math.round(v/.05)*.05, f2=v=>(Math.round(v*100)/100);
+
+// ponytail: every size below is an estimate (w across the bay, d along it, h height in metres). Swap in real product data when you have it.
+const CAT=[
+ {g:'Lifts',k:'lift4',n:'4 post lift (Class 4)',w:2.9,d:5.0,h:2.1,c:0x4f7cac,cls:'4',s:'four'},
+ {g:'Lifts',k:'lift7',n:'4 post lift (Class 7)',w:3.5,d:6.8,h:2.3,c:0x4f7cac,cls:'7',s:'four'},
+ {g:'Lifts',k:'lift2',n:'2 post lift',w:3.4,d:0.6,h:3.7,c:0x4f7cac,cls:'4',s:'two'},
+ {g:'Lifts',k:'scissor',n:'Scissor lift',w:2.4,d:2.0,h:0.3,c:0x4f7cac,cls:'4'},
+ {g:'Lifts',k:'mlift',n:'Motorcycle lift',w:2.3,d:0.8,h:0.8,c:0x4f7cac,cls:'1'},
+ {g:'Test equipment',k:'brake4',n:'Roller brake tester (car)',w:2.9,d:0.9,h:0.3,c:0xd99a1f,cls:'4'},
+ {g:'Test equipment',k:'brake7',n:'Roller brake tester (van)',w:3.4,d:1.1,h:0.35,c:0xd99a1f,cls:'7'},
+ {g:'Test equipment',k:'mbrake',n:'Motorcycle brake tester',w:2.0,d:0.7,h:0.3,c:0xd99a1f,cls:'1'},
+ {g:'Test equipment',k:'head',n:'Headlamp tester',w:0.6,d:0.6,h:1.4,c:0xd99a1f,cls:'147'},
+ {g:'Test equipment',k:'emis',n:'Emissions analyser',w:0.6,d:0.5,h:1.3,c:0xd99a1f,cls:'147'},
+ {g:'Test equipment',k:'play',n:'Play detector',w:1.5,d:0.9,h:0.2,c:0xd99a1f,cls:'47'},
+ {g:'Test equipment',k:'beam',n:'Jacking beam',w:1.4,d:0.45,h:0.35,c:0xd99a1f,cls:'47'},
+ {g:'Floor',k:'pit4',n:'Inspection pit (car)',w:0.9,d:4.5,h:0.02,c:0x12161a,cls:'4',t:'pit'},
+ {g:'Floor',k:'pit7',n:'Inspection pit (van)',w:0.9,d:6.5,h:0.02,c:0x12161a,cls:'7',t:'pit'},
+ {g:'Room',k:'col',n:'Column',w:0.4,d:0.4,h:null,c:0x8d979e,cls:'147',t:'fixed'},
+ {g:'Room',k:'zone',n:'Keep-clear zone',w:1.5,d:1.5,h:0.02,c:0xe0701a,cls:'147',t:'zone'},
+ {g:'Reference',k:'refcar',n:'Reference car',w:1.9,d:4.6,h:1.5,c:0x8a96a0,cls:'4',t:'ref'},
+ {g:'Reference',k:'refvan',n:'Reference van',w:2.1,d:5.5,h:2.0,c:0x8a96a0,cls:'7',t:'ref'},
+ {g:'Reference',k:'refbike',n:'Reference motorcycle',w:0.8,d:2.1,h:1.1,c:0x8a96a0,cls:'1',t:'ref'}
+];
+const def=k=>CAT.find(d=>d.k===k);
+const state={cls:'4',w:5,l:12,h:4,door:3,drive:false,items:[],sel:null,nid:1};
+const HT=d=>d.h==null?state.h:d.h;
+const real=()=>state.items.filter(i=>def(i.k).t!=='ref');
+const label=i=>{const d=def(i.k),s=state.items.filter(o=>o.k===i.k);return s.length>1?`${d.n} ${s.indexOf(i)+1}`:d.n};
+const selItem=()=>state.items.find(i=>i.id===state.sel);
+
+// geometry: footprint corners and a separating-axis overlap test
+function corners(it){const d=def(it.k),a=it.rot*Math.PI/180,c=Math.cos(a),s=Math.sin(a),hw=d.w/2,hd=d.d/2;
+ return [[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].map(([x,z])=>[it.x+x*c+z*s,it.z-x*s+z*c]);}
+function sat(A,B){
+ for(const P of [A,B])for(let i=0;i<4;i++){
+  const p=P[i],q=P[(i+1)%4];let ax=[q[1]-p[1],p[0]-q[0]];const n=Math.hypot(ax[0],ax[1]);ax=[ax[0]/n,ax[1]/n];
+  const pr=C=>{let lo=1e9,hi=-1e9;for(const c of C){const v=c[0]*ax[0]+c[1]*ax[1];lo=Math.min(lo,v);hi=Math.max(hi,v)}return[lo,hi]};
+  const[a0,a1]=pr(A),[b0,b1]=pr(B);
+  if(Math.min(a1,b1)-Math.max(a0,b0)<=.005)return false;}
+ return true;}
+const sq=(x,z)=>[[x-1,z-1],[x+1,z-1],[x+1,z+1],[x-1,z+1]];
+console.assert(sat(sq(0,0),sq(1,0))&&!sat(sq(0,0),sq(2,0))&&!sat(sq(0,0),sq(3,0)),'bay builder: overlap check failed');
+
+let issues=[];
+function check(){
+ issues=[];state.items.forEach(i=>i.bad=false);
+ const R=real();
+ R.forEach(i=>{const d=def(i.k);
+  if(corners(i).some(([x,z])=>Math.abs(x)>state.w/2+.005||Math.abs(z)>state.l/2+.005)){i.bad=true;issues.push(`${label(i)} is outside the bay.`)}
+  if(HT(d)>state.h+.001){i.bad=true;issues.push(`${label(i)} is taller than the ceiling (${HT(d)} m).`)}});
+ const C=R.filter(i=>def(i.k).t!=='pit');
+ for(let a=0;a<C.length;a++)for(let b=a+1;b<C.length;b++)
+  if(sat(corners(C[a]),corners(C[b]))){C[a].bad=C[b].bad=true;issues.push(`${label(C[a])} overlaps ${label(C[b])}.`)}
+}
+
+// undo
+const undo=[];
+const push=()=>{undo.push(JSON.stringify(state.items.map(({id,k,x,z,rot})=>({id,k,x,z,rot}))));if(undo.length>60)undo.shift()};
+
+// 3D scene
+let R_,scene,camera,roomG,itemG,dirty=true,ok3d=true;
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const cv=$('#c');
+try{
+ R_=new THREE.WebGLRenderer({canvas:cv,antialias:true});R_.setPixelRatio(Math.min(devicePixelRatio,2));
+}catch(e){ok3d=false;$('#view').insertAdjacentHTML('afterbegin','<p style="padding:24px">The 3D view needs WebGL, which this browser has turned off. The list and summary still work.</p>')}
+if(ok3d){
+ scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(40,1,.1,300);
+ scene.add(new THREE.HemisphereLight(0xffffff,0x667078,.95));
+ const sun=new THREE.DirectionalLight(0xffffff,.55);sun.position.set(5,10,7);scene.add(sun);
+ roomG=new THREE.Group();itemG=new THREE.Group();scene.add(roomG,itemG);
+}
+const cam={th:.6,ph:.7,d:20,tx:0,tz:0};
+const VIEWS={overview:[.6,.7],entrance:[0,.3],end:[Math.PI,.3],side:[Math.PI/2,.3],plan:[0,1.5]};
+let curView='overview';
+function place(){if(!ok3d)return;
+ camera.position.set(cam.tx+cam.d*Math.cos(cam.ph)*Math.sin(cam.th),cam.d*Math.sin(cam.ph),cam.tz+cam.d*Math.cos(cam.ph)*Math.cos(cam.th));
+ camera.lookAt(cam.tx,0,cam.tz);dirty=true;}
+function fit(v){if(!ok3d)return;
+ if(v){curView=v;[cam.th,cam.ph]=VIEWS[v];$$('[data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v))}
+ const asp=cv.clientWidth/Math.max(1,cv.clientHeight),hv=camera.fov*Math.PI/360,hh=Math.atan(Math.tan(hv)*asp);
+ cam.d=.5*Math.hypot(state.w,state.l,state.h)*1.1/Math.sin(Math.min(hv,hh));cam.tx=cam.tz=0;place();}
+
+function buildRoom(){if(!ok3d)return;
+ roomG.clear();const{w,l,h}=state;
+ scene.background=new THREE.Color(cssv('--scene-bg'));
+ const t=document.createElement('canvas');t.width=t.height=64;const x=t.getContext('2d');
+ x.fillStyle=cssv('--floor');x.fillRect(0,0,64,64);x.strokeStyle=cssv('--grid');x.lineWidth=2;x.strokeRect(0,0,64,64);
+ const tex=new THREE.CanvasTexture(t);tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(w,l);tex.anisotropy=4;
+ const fl=new THREE.Mesh(new THREE.PlaneGeometry(w,l),new THREE.MeshLambertMaterial({map:tex}));fl.rotation.x=-Math.PI/2;roomG.add(fl);
+ const wc=cssv('--wall'),bx=new THREE.BoxGeometry(w,h,l);
+ const shell=new THREE.Mesh(bx,new THREE.MeshBasicMaterial({color:wc,transparent:true,opacity:.1,side:THREE.BackSide,depthWrite:false}));shell.position.y=h/2+.004;roomG.add(shell);
+ const edges=new THREE.LineSegments(new THREE.EdgesGeometry(bx),new THREE.LineBasicMaterial({color:wc}));edges.position.y=h/2;roomG.add(edges);
+ const door=(z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(Math.min(state.door,w),.04,.3),new THREE.MeshBasicMaterial({color:cssv('--accent')}));m.position.set(0,.03,z);roomG.add(m)};
+ door(l/2-.15);if(state.drive)door(-l/2+.15);
+ dirty=true;}
+
+function build(it){
+ const d=def(it.k),H=HT(d),g=new THREE.Group();
+ const ref=d.t==='ref',zone=d.t==='zone';
+ const M=()=>new THREE.MeshLambertMaterial({color:d.c,transparent:ref||zone,opacity:ref?.4:zone?.45:1,depthWrite:!(ref||zone)});
+ const box=(w,h,dd,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,dd),M());m.position.set(x,y,z);g.add(m)};
+ if(d.s==='four'){[-1,1].forEach(sx=>{[-1,1].forEach(sz=>box(.15,H,.15,sx*(d.w/2-.08),H/2,sz*(d.d/2-.08)));box(.55,.15,d.d-.2,sx*(d.w/2-.5),.22,0)})}
+ else if(d.s==='two'){[-1,1].forEach(s=>box(.3,H,.5,s*(d.w/2-.15),H/2,0));box(d.w,.05,.6,0,.025,0)}
+ else box(d.w,H,d.d,0,H/2,0);
+ g.children.slice().forEach(m=>{const e=new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x000000,transparent:true,opacity:.35}));e.position.copy(m.position);g.add(e)});
+ it.g=g;pose(it);return g;}
+function pose(it){if(!it.g)return;it.g.position.set(it.x,0,it.z);it.g.rotation.y=it.rot*Math.PI/180;}
+function paint(){if(!ok3d)return;
+ state.items.forEach(i=>i.g&&i.g.traverse(o=>{if(o.material&&o.material.emissive)o.material.emissive.setHex(i.bad?0x6a1010:i.id===state.sel?0x4a3a00:0)}));dirty=true;}
+function sync(){check();if(ok3d){itemG.clear();state.items.forEach(i=>itemG.add(build(i)))}paint();ui();}
+
+// pointer, wheel and keyboard
+const ray=new THREE.Raycaster(),plane=new THREE.Plane(new THREE.Vector3(0,1,0),0),hit=new THREE.Vector3();
+const ndc=e=>{const r=cv.getBoundingClientRect();return new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1)};
+const floorPt=e=>{ray.setFromCamera(ndc(e),camera);return ray.ray.intersectPlane(plane,hit)?hit.clone():null};
+let drag=null;
+function select(id){state.sel=id;paint();ui();}
+if(ok3d){
+ cv.addEventListener('pointerdown',e=>{
+  cv.setPointerCapture(e.pointerId);cv.focus();
+  const pan=e.button===2||e.shiftKey;ray.setFromCamera(ndc(e),camera);
+  const its=pan?[]:ray.intersectObjects(itemG.children,true).map(h=>{let o=h.object;while(o.parent!==itemG)o=o.parent;return state.items.find(i=>i.g===o)}).filter(Boolean);
+  const it=its.find(i=>def(i.k).t!=='ref')||its[0];
+  if(it){select(it.id);const p=floorPt(e);drag={m:'move',it,ox:p.x-it.x,oz:p.z-it.z,pushed:false}}
+  else{if(!pan)select(null);drag={m:pan?'pan':'orbit',x:e.clientX,y:e.clientY}}
+ });
+ cv.addEventListener('pointermove',e=>{if(!drag)return;
+  if(drag.m==='move'){const p=floorPt(e);if(!p)return;if(!drag.pushed){push();drag.pushed=true}
+   const it=drag.it;it.x=snap(clamp(p.x-drag.ox,-state.w/2,state.w/2));it.z=snap(clamp(p.z-drag.oz,-state.l/2,state.l/2));pose(it);check();paint();ui();return}
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+  if(drag.m==='orbit'){cam.th-=dx*.006;cam.ph=clamp(cam.ph+dy*.006,.1,1.52)}
+  else{const s=2*cam.d*Math.tan(camera.fov*Math.PI/360)/cv.clientHeight;
+   cam.tx+=-Math.cos(cam.th)*dx*s-Math.sin(cam.th)*dy*s;cam.tz+=Math.sin(cam.th)*dx*s-Math.cos(cam.th)*dy*s}
+  place();
+ });
+ ['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,()=>drag=null));
+ cv.addEventListener('contextmenu',e=>e.preventDefault());
+ cv.addEventListener('wheel',e=>{e.preventDefault();cam.d=clamp(cam.d*Math.exp(e.deltaY*.001),3,90);place()},{passive:false});
+}
+function remove(){const it=selItem();if(!it)return;push();state.items=state.items.filter(i=>i!==it);state.sel=null;sync();}
+function rotate(a){const it=selItem();if(!it)return;push();it.rot=(it.rot+a+360)%360;pose(it);check();paint();ui();}
+function undoOp(){const s=undo.pop();if(!s)return;state.items=JSON.parse(s);if(!selItem())state.sel=null;sync();}
+addEventListener('keydown',e=>{
+ if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undoOp();return}
+ const it=selItem();if(!it)return;
+ const st=e.shiftKey?.5:.1,mv={ArrowLeft:[-st,0],ArrowRight:[st,0],ArrowUp:[0,-st],ArrowDown:[0,st]}[e.key];
+ if(mv){e.preventDefault();push();it.x=clamp(f2(it.x+mv[0]),-state.w/2,state.w/2);it.z=clamp(f2(it.z+mv[1]),-state.l/2,state.l/2);pose(it);check();paint();ui()}
+ else if(e.key.toLowerCase()==='r')rotate(e.shiftKey?-15:15);
+ else if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();remove()}
+ else if(e.key==='Escape')select(null);
+});
+
+// adding equipment
+function spot(k){const d=def(k);if(d.t==='ref')return[0,0];
+ for(let z=-state.l/2+d.d/2;z<=state.l/2-d.d/2+1e-6;z+=.25)for(const x of[0,-1.2,1.2,-2.2,2.2]){
+  if(Math.abs(x)+d.w/2>state.w/2)continue;const c=corners({k,x,z,rot:0});
+  if(!real().some(o=>def(o.k).t!=='pit'&&d.t!=='pit'&&sat(c,corners(o))))return[f2(x),f2(z)];}
+ return[0,0];}
+function add(k,x,z){push();const p=x==null?spot(k):[x,z],it={id:state.nid++,k,x:p[0],z:p[1],rot:0};state.items.push(it);state.sel=it.id;sync();}
+
+// panels
+const sizeOf=d=>`${d.w} × ${d.d}${d.h==null?'':' × '+d.h} m`;
+function renderCat(){
+ const vis=CAT.filter(d=>[...state.cls].some(c=>d.cls.includes(c)));let h='',g='';
+ vis.forEach(d=>{if(d.g!==g){g=d.g;h+=`<h3>${g}</h3>`}h+=`<button class="btn" data-add="${d.k}"><span>${d.n}</span><span class="m">${d.w} × ${d.d} m</span></button>`});
+ $('#cat').innerHTML=h;}
+const clsName=()=>({1:'Class 1 & 2 (motorcycles)',4:'Class 4 (cars and light vans)',47:'Class 4 & 7 (cars and vans)'}[state.cls]);
+function summary(){
+ const R=real(),L=[`Bay type: ${clsName()}`,`Test lane: ${$('#lane').value}`,
+  `Illustrative bay: ${state.w} × ${state.l} m, ceiling ${state.h} m`,
+  `Vehicle door: ${state.door} m wide at the entrance end${state.drive?', drive-through with a matching door at the far end':''}`,'',
+  R.length?'Equipment (sizes are estimates):':'No equipment added yet.'];
+ R.forEach(i=>{const d=def(i.k);L.push(`- ${label(i)}: ${sizeOf(d)}, ${f2(i.x+state.w/2)} m from the left wall, ${f2(state.l/2-i.z)} m from the entrance end, turned ${i.rot}°`)});
+ L.push('',issues.length?'Points to check:':'No clashes found.');issues.forEach(s=>L.push('- '+s));
+ const n=$('#notes').value.trim();if(n)L.push('','Notes: '+n);
+ L.push('','Illustrative layout, subject to technical review. No prices, no commitment.');return L.join('\n');}
+function ui(){
+ $('#count').textContent=real().length;
+ $('#list').innerHTML=state.items.length?state.items.map(i=>`<li><button class="row" data-id="${i.id}" aria-current="${i.id===state.sel}"><span>${label(i)}</span><span class="m">${i.bad?'Check':''}</span></button></li>`).join(''):'<li class="empty">Your bay is empty. Add equipment from the list.</li>';
+ const it=selItem(),sb=$('#selbox');sb.hidden=!it;
+ if(it){const d=def(it.k);sb.innerHTML=`<p><b>${label(it)}</b></p><p class="m">Estimated size ${sizeOf(d)}${d.h==null?', ceiling height':''}</p><div class="row2"><button class="btn" data-a="-15">Turn −15°</button><button class="btn" data-a="15">Turn +15°</button><button class="btn" data-a="90">Turn 90°</button><button class="btn" data-a="del">Remove</button></div>`}
+ $('#issues').innerHTML=issues.length?issues.map(s=>`<li>${s}</li>`).join(''):(real().length?'<li class="ok">No clashes found.</li>':'');
+ $('#sum').textContent=summary();}
+
+// wiring
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.add)add(b.dataset.add);
+ else if(b.dataset.id)select(+b.dataset.id);
+ else if(b.dataset.a){b.dataset.a==='del'?remove():rotate(+b.dataset.a)}
+ else if(b.dataset.v)fit(b.dataset.v);
+ else if(b.dataset.w){$('#w').value=b.dataset.w;room()}
+});
+$('#zin').onclick=()=>{cam.d=clamp(cam.d*.8,3,90);place()};
+$('#zout').onclick=()=>{cam.d=clamp(cam.d*1.25,3,90);place()};
+$('#fit').onclick=()=>fit(curView);
+$('#undo').onclick=undoOp;
+$('#clear').onclick=()=>{if(!state.items.length)return;push();state.items=[];state.sel=null;sync()};
+$$('input[name=cls]').forEach(r=>r.onchange=()=>{state.cls=r.value;renderCat();ui()});
+function room(){
+ state.w=clamp(+$('#w').value||5,3,20);state.l=clamp(+$('#l').value||12,5,30);state.h=clamp(+$('#h').value||4,2.5,8);
+ state.door=clamp(+$('#door').value||3,1,Math.min(6,state.w));state.drive=$('#drive').checked;
+ ['w','l','h','door'].forEach(k=>$('#'+k).value=state[k]);
+ buildRoom();sync();fit(curView);}
+['#w','#l','#h','#door','#drive'].forEach(s=>$(s).onchange=room);
+['#lane','#notes'].forEach(s=>$(s).oninput=ui);
+$('#form').onsubmit=e=>{e.preventDefault();$('#msg').textContent='Nothing has been sent. This version has no server, so copy the summary and email it to the team.'};
+$('#copy').onclick=()=>{const t=$('#sum').textContent;
+ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>$('#msg').textContent='Summary copied.').catch(()=>{
+  const r=document.createRange();r.selectNodeContents($('#sum'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#msg').textContent='Press Ctrl+C or Cmd+C to copy the selected summary.'})};
+
+// theme changes redraw the room
+const themeRedraw=()=>{buildRoom()};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',themeRedraw);
+new MutationObserver(themeRedraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+// size and render loop
+if(ok3d){let first=true;
+ new ResizeObserver(()=>{const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;R_.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+  if(first){first=false;fit('overview')}dirty=true}).observe(cv);
+ (function loop(){requestAnimationFrame(loop);if(dirty){dirty=false;R_.render(scene,camera)}})();
+}
+
+// starting layout: a Class 4 bay with a car on the lift
+renderCat();buildRoom();
+[['lift4',0,.5],['refcar',0,.5],['brake4',0,3.9],['head',-1.8,-5.3],['emis',1.8,-5.3]].forEach(([k,x,z])=>state.items.push({id:state.nid++,k,x,z,rot:0}));
+sync();
+})();
+</script>
+
+</body></html>
