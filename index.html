@@ -1,85 +1,111 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Bay Builder</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700;900&family=Barlow+Semi+Condensed:wght@700&display=swap">
 <style>
-/* Layout: 3D stage on the left, controls on the right, review form underneath. Stacks to one column on phones. */
+/* Layout: red site-style banner, 3D stage beside the numbered controls, light form panel on a dark band below. One dark look, matching the site. */
 :root{
-  --bg:#f4f4f4; --surface:#ffffff; --ink:#1a1a1a; --muted:#5c5c5c; --line:#d6d6d6;
-  --accent:#ed1c24; --accent-ink:#ffffff; --bad:#b45309; --ok:#1f7a45;
-  --scene-bg:#e6e6e6; --floor:#f7f7f7; --grid:#d0d0d0; --wall:#6b6b6b;
-  --display:'Barlow',system-ui,sans-serif;
-  --body:'Barlow',system-ui,sans-serif;
-  --mono:'Barlow',system-ui,sans-serif;
+  --bg:#1a1a1a; --card:#1c1c1c; --raise:#2e2e2e; --line:#3a3a3a; --ink:#ffffff; --muted:#b9b9b9;
+  --red:#ed1c24; --red-btn:#d0021b; --red-deep:#9e1720; --red-deeper:#772626;
+  --green:#009245; --amber:#fbbf24; --paper:#f7f7f7; --paper-line:#e6e6e6;
+  --accent:#ed1c24; --scene-bg:#111111; --floor:#2a2a2a; --grid:#3d3d3d; --wall:#8a8a8a;
+  --head:'Barlow Semi Condensed','Barlow',Arial,sans-serif;
+  --body:'Barlow',Arial,sans-serif;
+  --mono:'Barlow',Arial,sans-serif;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#1a1a1a; --surface:#242424; --ink:#ffffff; --muted:#a8a8a8; --line:#3a3a3a;
-  --bad:#fbbf24; --ok:#5cc58a; --scene-bg:#111111; --floor:#262626; --grid:#3a3a3a; --wall:#8a8a8a; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#1a1a1a; --surface:#242424; --ink:#ffffff; --muted:#a8a8a8; --line:#3a3a3a;
-  --bad:#fbbf24; --ok:#5cc58a; --scene-bg:#111111; --floor:#262626; --grid:#3a3a3a; --wall:#8a8a8a; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
-h1,h2{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:0;text-wrap:balance}
-h1{font-size:2rem;line-height:1}
-h2{font-size:1.15rem;margin-bottom:8px}
-.top{max-width:1280px;margin:0 auto 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
-.top p{margin:0;color:var(--muted);font-size:.9rem}
-.app,.review{max-width:1280px;margin:0 auto;display:grid;gap:16px 24px}
-.app{grid-template-columns:minmax(0,1fr) 22rem}
-.review{margin-top:24px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:2px solid var(--ink);padding-top:16px}
-.stage{align-self:start;position:sticky;top:12px}
-@media (max-width:860px){.app,.review{grid-template-columns:minmax(0,1fr)}.stage{position:static}}
-.view{position:relative;height:clamp(320px,62vh,640px);background:var(--scene-bg);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+::selection{background:#000;color:#ed1c24}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body);padding-bottom:40px}
+.in{width:100%;max-width:1312px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2{font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin:0;text-wrap:balance}
+h1{font-size:2.1rem;line-height:1}
+h2{font-size:1.35rem;line-height:1.1;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--red-btn);color:#fff;font:700 16px/1 var(--body)}
+.top{background:var(--red);box-shadow:0 0 15px rgba(0,0,0,.3);padding-block:14px}
+.top .in{display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px}
+.tag{background:var(--bg);color:#fff;font:700 12px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;padding:5px 8px}
+.lead{margin:18px 0 6px;color:var(--muted);max-width:75ch}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 23rem;gap:16px 28px;padding-block:12px}
+@media (max-width:860px){.app,.review{grid-template-columns:minmax(0,1fr)!important}.stage{position:static!important}}
+.stage{min-width:0;align-self:start;position:sticky;top:12px}
+.view{position:relative;height:clamp(320px,62vh,640px);background:var(--scene-bg);overflow:hidden}
 canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 .viewbar,.zoom{position:absolute;display:flex;flex-wrap:wrap;gap:4px}
 .viewbar{top:8px;left:8px;right:8px}.zoom{bottom:8px;right:8px}
-.hint{position:absolute;left:8px;bottom:8px;max-width:calc(100% - 130px);font:13px/1.35 var(--mono);color:var(--muted);pointer-events:none}
-.btn{font:inherit;font-size:.9rem;padding:6px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:3px;cursor:pointer}
-.btn:hover{border-color:var(--ink)}
-.btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.btn.primary{text-transform:uppercase;letter-spacing:.04em;background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
-:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.hint{position:absolute;left:10px;bottom:8px;max-width:calc(100% - 200px);font:500 13px/1.35 var(--body);color:var(--muted);pointer-events:none;margin:0}
+.btn{font:700 14px/1.2 var(--body);text-transform:uppercase;letter-spacing:.04em;padding:10px 14px;border:0;border-radius:4px;background:var(--raise);color:#fff;cursor:pointer;transition:background-color .2s}
+.btn:hover{background:#000}
+.btn[aria-pressed="true"]{background:var(--red-btn)}
+.viewbar .btn,.zoom .btn{background:rgba(26,26,26,.92)}
+.viewbar .btn[aria-pressed="true"]{background:var(--red-btn)}
+.btn.dark{background:var(--bg)}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .panel{min-width:0}
-.sec{border-top:1px solid var(--line);padding-block:14px}
-.sec:first-child{border-top:0;padding-top:0}
+.sec{border-top:1px solid var(--line);padding-block:18px}
+.sec:first-child{border-top:0;padding-top:4px}
 .seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.seg label{border:1px solid var(--line);background:var(--surface);border-radius:3px;padding:8px;cursor:pointer;display:block;min-width:0}
+.seg label{background:var(--card);padding:10px;cursor:pointer;display:block;min-width:0;transition:background .2s}
+.seg label:hover{background:#000}
 .seg input{position:absolute;opacity:0}
-.seg label:has(input:checked){background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.seg label:has(input:focus-visible){outline:2px solid var(--ink);outline-offset:2px}
-.seg b{display:block;font-weight:600}.seg small{display:block;font-size:.78rem;line-height:1.3;opacity:.8}
-.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-label.f{display:grid;gap:2px;font-size:.85rem;color:var(--muted)}
-input[type=number],input[type=text],input[type=email],input[type=tel],select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 8px;width:100%;min-width:0}
+.seg label:has(input:checked){background:linear-gradient(0deg,var(--red-deep) 0%,var(--red-deeper) 100%)}
+.seg label:has(input:focus-visible){outline:2px solid #fff;outline-offset:2px}
+.seg b{display:block;font-weight:900;text-transform:uppercase;line-height:1.2}
+.seg small{display:block;font-size:.8rem;line-height:1.3;margin-top:2px;color:var(--muted)}
+.seg label:has(input:checked) small{color:#fff}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+label.f{display:grid;gap:4px;font:700 13px/1.2 var(--body);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+input[type=number],input[type=text],input[type=email],input[type=tel],select,textarea{font:500 16px var(--body);color:#111;background:#fff;border:0;border-radius:0;padding:10px 12px;width:100%;min-width:0;caret-color:var(--red)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--red);outline-offset:0}
 textarea{min-height:80px;resize:vertical}
-.row2{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chk{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:.9rem}
-.cat h3{font:600 .75rem var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
-.cat .btn,.list .row{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;margin-bottom:4px}
-.m{font:500 13px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+input[type=checkbox]{accent-color:var(--red-btn);width:18px;height:18px}
+.row2{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chk{display:flex;gap:10px;align-items:center;margin-top:10px;font-size:.95rem}
+.cat h3{font:700 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+.cat .btn,.list .row{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;margin-bottom:4px;border-radius:0;background:#262626;font:500 15px/1.3 var(--body);text-transform:none;letter-spacing:0;color:#fff;padding:9px 12px}
+.cat .btn:hover,.list .row:hover{background:#000;box-shadow:inset 3px 0 0 var(--red)}
+.list .row{border:0;cursor:pointer}
+.list .row[aria-current="true"]{background:#000;box-shadow:inset 3px 0 0 var(--red)}
+.m{font:500 13px var(--body);color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 ul{list-style:none;margin:0;padding:0}
-.list .row{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 10px;border-radius:3px;cursor:pointer;font:inherit;font-size:.9rem}
-.list .row[aria-current="true"]{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--accent)}
-.empty{color:var(--muted);font-size:.9rem;margin:0}
-.issues{margin-top:10px;font-size:.9rem}
-.issues li{color:var(--bad);padding:2px 0}.issues .ok{color:var(--ok)}
-#selbox{border:1px solid var(--ink);border-radius:3px;padding:10px;margin-top:10px}
+.empty{color:var(--muted);margin:0}
+.issues{margin-top:10px;font-weight:500}
+.issues li{color:var(--amber);padding:2px 0}
+.issues li.ok{display:inline-block;background:var(--green);color:#fff;font:700 13px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:7px 10px}
+#selbox{background:#000;border-left:4px solid var(--red);padding:12px;margin-top:10px}
 #selbox p{margin:0 0 4px}
-pre{font:14px/1.5 var(--mono);font-variant-numeric:tabular-nums;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:12px;overflow-x:auto;white-space:pre-wrap;margin:0;max-height:360px;overflow-y:auto}
+.rvband{background:#111;margin-top:32px;padding-block:32px}
+.review{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+.formpanel{background:var(--paper);color:#000;padding:24px;min-width:0}
+.formpanel h2{color:#000}
+.formpanel .note{color:#444;margin:0 0 14px}
+.formpanel label.f{color:#000;font-weight:700}
+.formpanel input,.formpanel select,.formpanel textarea{box-shadow:inset 0 0 0 1px #d0d0d0}
+.formpanel :focus-visible{outline-color:#000}
+label.f.req{display:block}
+label.f.req input{margin-top:4px}
+.req::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px;vertical-align:1px}
+.fgroup{border-top:6px solid var(--paper-line);padding-top:12px;margin-top:14px}
+.sumpanel{min-width:0}
+pre{font:500 14px/1.5 var(--body);font-variant-numeric:tabular-nums;color:#fff;background:#000;padding:18px;margin:0;overflow-x:auto;white-space:pre-wrap;max-height:420px;overflow-y:auto}
 form{display:grid;gap:10px;min-width:0}
-.note{font-size:.85rem;color:var(--muted)}
-#msg{min-height:1.4em;font-size:.9rem}
+.submit{background:transparent;color:var(--red-btn);border:2px solid var(--red-btn);font:700 20px/1 var(--body);text-transform:uppercase;letter-spacing:.04em;padding:16px 22px;cursor:pointer;transition:background-color .2s,color .2s}
+.submit::after{content:"+";margin-left:28px;font-size:32px;font-weight:300;line-height:0;vertical-align:-3px}
+.submit:hover{background:var(--red-btn);color:#fff}
+.formpanel .btn{background:var(--bg)}
+.formpanel .btn:hover{background:#000}
+#msg{min-height:1.4em;font-weight:500;margin:0}
+.note{font-size:.9rem}
 </style>
 
-<header class="top">
-  <h1>Bay Builder</h1>
-  <p>Beta. Lay out an MOT bay in 3D. Sizes are estimates, so treat it as a guide and not a technical drawing.</p>
-</header>
+<header class="top"><div class="in">
+  <h1>Bay Builder</h1><span class="tag">Beta</span>
+</div></header>
 
-<main class="app">
-  <section class="stage" style="min-width:0">
+<div class="in"><p class="lead">Lay out an MOT bay in 3D with real-size equipment shapes. Sizes are estimates, so treat this as a guide and not a technical drawing.</p></div>
+
+<main class="app in">
+  <section class="stage">
     <div class="view" id="view">
       <canvas id="c" tabindex="0" aria-label="3D bay layout"></canvas>
       <div class="viewbar" role="group" aria-label="Camera views">
@@ -101,7 +127,7 @@ form{display:grid;gap:10px;min-width:0}
 
   <aside class="panel">
     <div class="sec">
-      <h2>What will the bay test?</h2>
+      <h2><span class="step">1</span>What will the bay test?</h2>
       <div class="seg" role="radiogroup">
         <label><input type="radio" name="cls" value="1" id="cls1"><b>Class 1 &amp; 2</b><small>Motorcycles</small></label>
         <label><input type="radio" name="cls" value="4" checked><b>Class 4</b><small>Cars and light vans</small></label>
@@ -110,26 +136,26 @@ form{display:grid;gap:10px;min-width:0}
     </div>
 
     <div class="sec">
-      <h2>Bay size</h2>
-      <div class="row2" style="margin:0 0 8px">
+      <h2><span class="step">2</span>Bay size</h2>
+      <div class="row2" style="margin:0 0 10px">
         <button class="btn" data-w="5">Standard</button><button class="btn" data-w="8">Double width</button><button class="btn" data-w="11">Triple width</button>
       </div>
       <div class="fields">
-        <label class="f">Width (m)<input type="number" id="w" value="5" min="3" max="50" step="0.5"></label>
-        <label class="f">Length (m)<input type="number" id="l" value="12" min="5" max="50" step="0.5"></label>
-        <label class="f">Ceiling height (m)<input type="number" id="h" value="4" min="2.5" max="10" step="0.1"></label>
-        <label class="f">Vehicle door width (m)<input type="number" id="door" value="3" min="1" max="6" step="0.1"></label>
+        <label class="f">Width (m)<input type="number" id="w" value="5" min="3" max="20" step="0.5"></label>
+        <label class="f">Length (m)<input type="number" id="l" value="12" min="5" max="30" step="0.5"></label>
+        <label class="f">Ceiling height (m)<input type="number" id="h" value="4" min="2.5" max="8" step="0.1"></label>
+        <label class="f">Vehicle door (m)<input type="number" id="door" value="3" min="1" max="6" step="0.1"></label>
       </div>
       <label class="chk"><input type="checkbox" id="drive"> Drive-through: add a matching door at the far end</label>
     </div>
 
     <div class="sec">
-      <h2>Add equipment</h2>
+      <h2><span class="step">3</span>Add equipment</h2>
       <div class="cat" id="cat"></div>
     </div>
 
     <div class="sec">
-      <h2>Your bay <span id="count" class="m">0</span></h2>
+      <h2><span class="step">4</span>Your bay <span id="count" class="m">0</span></h2>
       <div class="list"><ul id="list"></ul></div>
       <div id="selbox" hidden></div>
       <div class="row2"><button class="btn" id="undo">Undo</button><button class="btn" id="clear">Clear all</button></div>
@@ -137,29 +163,29 @@ form{display:grid;gap:10px;min-width:0}
   </aside>
 </main>
 
-<section class="review" aria-labelledby="rv">
-  <div style="min-width:0">
-    <h2 id="rv">Review your layout</h2>
+<section class="rvband" aria-labelledby="rv"><div class="review in">
+  <div class="formpanel">
+    <h2 id="rv"><span class="step">5</span>Review your layout</h2>
     <p class="note">This is an illustrative configuration. Sizes are estimates and need checking by a technician before any quote.</p>
-    <label class="f" style="margin-top:10px">Type of test lane
+    <label class="f">Type of test lane
       <select id="lane"><option>Standard bay</option><option>ATL or OPTL</option><option>Not sure yet</option></select>
     </label>
-    <label class="f" style="margin-top:10px">Project notes<textarea id="notes" placeholder="Anything we should know about the building, floor or timing"></textarea></label>
-    <form id="form" style="margin-top:14px">
+    <label class="f fgroup">Project notes<textarea id="notes" placeholder="Anything we should know about the building, floor or timing"></textarea></label>
+    <form id="form" class="fgroup">
       <div class="fields">
-        <label class="f">Name<input type="text" id="fname" required autocomplete="name"></label>
-        <label class="f">Email<input type="email" id="femail" required autocomplete="email"></label>
+        <label class="f req">Name<input type="text" id="fname" required autocomplete="name"></label>
+        <label class="f req">Email<input type="email" id="femail" required autocomplete="email"></label>
         <label class="f">Phone (optional)<input type="tel" id="fphone" autocomplete="tel"></label>
       </div>
-      <div class="row2" style="margin:0"><button class="btn primary" type="submit">Request a review</button><button class="btn" type="button" id="copy">Copy summary</button></div>
+      <div class="row2" style="margin:6px 0 0"><button class="submit" type="submit">Request a review</button><button class="btn" type="button" id="copy">Copy summary</button></div>
       <p id="msg" role="status"></p>
     </form>
   </div>
-  <div style="min-width:0">
+  <div class="sumpanel">
     <h2>Summary</h2>
     <pre id="sum"></pre>
   </div>
-</section>
+</div></section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -169,22 +195,22 @@ const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)), snap=v=>Math.round(v/.05)*.05, f
 
 // ponytail: every size below is an estimate (w across the bay, d along it, h height in metres). Swap in real product data when you have it.
 const CAT=[
- {g:'Lifts',k:'lift4',n:'4 post lift (Class 4)',w:2.9,d:5.0,h:2.1,c:0x4f7cac,cls:'4',s:'four'},
- {g:'Lifts',k:'lift7',n:'4 post lift (Class 7)',w:3.5,d:6.8,h:2.3,c:0x4f7cac,cls:'7',s:'four'},
- {g:'Lifts',k:'lift2',n:'2 post lift',w:3.4,d:0.6,h:3.7,c:0x4f7cac,cls:'4',s:'two'},
- {g:'Lifts',k:'scissor',n:'Scissor lift',w:2.4,d:2.0,h:0.3,c:0x4f7cac,cls:'4'},
- {g:'Lifts',k:'mlift',n:'Motorcycle lift',w:2.3,d:0.8,h:0.8,c:0x4f7cac,cls:'1'},
- {g:'Test equipment',k:'brake4',n:'Roller brake tester (car)',w:2.9,d:0.9,h:0.3,c:0xd99a1f,cls:'4'},
- {g:'Test equipment',k:'brake7',n:'Roller brake tester (van)',w:3.4,d:1.1,h:0.35,c:0xd99a1f,cls:'7'},
- {g:'Test equipment',k:'mbrake',n:'Motorcycle brake tester',w:2.0,d:0.7,h:0.3,c:0xd99a1f,cls:'1'},
- {g:'Test equipment',k:'head',n:'Headlamp tester',w:0.6,d:0.6,h:1.4,c:0xd99a1f,cls:'147'},
- {g:'Test equipment',k:'emis',n:'Emissions analyser',w:0.6,d:0.5,h:1.3,c:0xd99a1f,cls:'147'},
- {g:'Test equipment',k:'play',n:'Play detector',w:1.5,d:0.9,h:0.2,c:0xd99a1f,cls:'47'},
- {g:'Test equipment',k:'beam',n:'Jacking beam',w:1.4,d:0.45,h:0.35,c:0xd99a1f,cls:'47'},
+ {g:'Lifts',k:'lift4',n:'4 post lift (Class 4)',w:2.9,d:5.0,h:2.1,c:0x8f9aa5,cls:'4',s:'four'},
+ {g:'Lifts',k:'lift7',n:'4 post lift (Class 7)',w:3.5,d:6.8,h:2.3,c:0x8f9aa5,cls:'7',s:'four'},
+ {g:'Lifts',k:'lift2',n:'2 post lift',w:3.4,d:0.6,h:3.7,c:0x8f9aa5,cls:'4',s:'two'},
+ {g:'Lifts',k:'scissor',n:'Scissor lift',w:2.4,d:2.0,h:0.3,c:0x8f9aa5,cls:'4'},
+ {g:'Lifts',k:'mlift',n:'Motorcycle lift',w:2.3,d:0.8,h:0.8,c:0x8f9aa5,cls:'1'},
+ {g:'Test equipment',k:'brake4',n:'Roller brake tester (car)',w:2.9,d:0.9,h:0.3,c:0xed1c24,cls:'4'},
+ {g:'Test equipment',k:'brake7',n:'Roller brake tester (van)',w:3.4,d:1.1,h:0.35,c:0xed1c24,cls:'7'},
+ {g:'Test equipment',k:'mbrake',n:'Motorcycle brake tester',w:2.0,d:0.7,h:0.3,c:0xed1c24,cls:'1'},
+ {g:'Test equipment',k:'head',n:'Headlamp tester',w:0.6,d:0.6,h:1.4,c:0xed1c24,cls:'147'},
+ {g:'Test equipment',k:'emis',n:'Emissions analyser',w:0.6,d:0.5,h:1.3,c:0xed1c24,cls:'147'},
+ {g:'Test equipment',k:'play',n:'Play detector',w:1.5,d:0.9,h:0.2,c:0xed1c24,cls:'47'},
+ {g:'Test equipment',k:'beam',n:'Jacking beam',w:1.4,d:0.45,h:0.35,c:0xed1c24,cls:'47'},
  {g:'Floor',k:'pit4',n:'Inspection pit (car)',w:0.9,d:4.5,h:0.02,c:0x12161a,cls:'4',t:'pit'},
  {g:'Floor',k:'pit7',n:'Inspection pit (van)',w:0.9,d:6.5,h:0.02,c:0x12161a,cls:'7',t:'pit'},
- {g:'Room',k:'col',n:'Column',w:0.4,d:0.4,h:null,c:0x8d979e,cls:'147',t:'fixed'},
- {g:'Room',k:'zone',n:'Keep-clear zone',w:1.5,d:1.5,h:0.02,c:0xe0701a,cls:'147',t:'zone'},
+ {g:'Room',k:'col',n:'Column',w:0.4,d:0.4,h:null,c:0x7a7a7a,cls:'147',t:'fixed'},
+ {g:'Room',k:'zone',n:'Keep-clear zone',w:1.5,d:1.5,h:0.02,c:0xf2b705,cls:'147',t:'zone'},
  {g:'Reference',k:'refcar',n:'Reference car',w:1.9,d:4.6,h:1.5,c:0x8a96a0,cls:'4',t:'ref'},
  {g:'Reference',k:'refvan',n:'Reference van',w:2.1,d:5.5,h:2.0,c:0x8a96a0,cls:'7',t:'ref'},
  {g:'Reference',k:'refbike',n:'Reference motorcycle',w:0.8,d:2.1,h:1.1,c:0x8a96a0,cls:'1',t:'ref'}
@@ -275,7 +301,7 @@ function build(it){
  it.g=g;pose(it);return g;}
 function pose(it){if(!it.g)return;it.g.position.set(it.x,0,it.z);it.g.rotation.y=it.rot*Math.PI/180;}
 function paint(){if(!ok3d)return;
- state.items.forEach(i=>i.g&&i.g.traverse(o=>{if(o.material&&o.material.emissive)o.material.emissive.setHex(i.bad?0x6a1010:i.id===state.sel?0x4a3a00:0)}));dirty=true;}
+ state.items.forEach(i=>i.g&&i.g.traverse(o=>{if(o.material&&o.material.emissive)o.material.emissive.setHex(i.bad?0x805a00:i.id===state.sel?0x3a3a3a:0)}));dirty=true;}
 function sync(){check();if(ok3d){itemG.clear();state.items.forEach(i=>itemG.add(build(i)))}paint();ui();}
 
 // pointer, wheel and keyboard
@@ -378,11 +404,6 @@ $('#form').onsubmit=e=>{e.preventDefault();$('#msg').textContent='Nothing has be
 $('#copy').onclick=()=>{const t=$('#sum').textContent;
  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>$('#msg').textContent='Summary copied.').catch(()=>{
   const r=document.createRange();r.selectNodeContents($('#sum'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#msg').textContent='Press Ctrl+C or Cmd+C to copy the selected summary.'})};
-
-// theme changes redraw the room
-const themeRedraw=()=>{buildRoom()};
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change',themeRedraw);
-new MutationObserver(themeRedraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
 // size and render loop
 if(ok3d){let first=true;
