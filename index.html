@@ -163,6 +163,28 @@ form{display:grid;gap:10px;min-width:0}
   </aside>
 </main>
 
+<section class="rvband" aria-labelledby="rv"><div class="review in">
+  <div class="formpanel">
+    <h2 id="rv"><span class="step">5</span>Review your layout</h2>
+    <p class="note">This is an illustrative configuration. Sizes are estimates and need checking by a technician before any quote.</p>
+    <label class="f">Type of test lane
+      <select id="lane"><option>Standard bay</option><option>ATL or OPTL</option><option>Not sure yet</option></select>
+    </label>
+    <label class="f fgroup">Project notes<textarea id="notes" placeholder="Anything we should know about the building, floor or timing"></textarea></label>
+    <form id="form" class="fgroup">
+      <div class="fields">
+        <label class="f req">Name<input type="text" id="fname" required autocomplete="name"></label>
+        <label class="f req">Email<input type="email" id="femail" required autocomplete="email"></label>
+        <label class="f">Phone (optional)<input type="tel" id="fphone" autocomplete="tel"></label>
+      </div>
+      <div class="row2" style="margin:6px 0 0"><button class="submit" type="submit">Request a review</button><button class="btn" type="button" id="copy">Copy summary</button></div>
+      <p id="msg" role="status"></p>
+    </form>
+  </div>
+  <div class="sumpanel">
+    <h2>Summary</h2>
+    <pre id="sum"></pre>
+  </div>
 </div></section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
