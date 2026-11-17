@@ -1,9 +1,12 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bay Builder</title>
-<meta name="viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700;900&family=Barlow+Semi+Condensed:wght@700&display=swap">
 <style>
-/* Layout: red site-style banner, 3D stage beside the numbered controls, light form panel on a dark band below. One dark look, matching the site. */
+/* Layout: red site-style banner, 3D stage beside the numbered controls, light panel on a dark band below. One dark look, matching the site. */
 :root{
   --bg:#1a1a1a; --card:#1c1c1c; --raise:#2e2e2e; --line:#3a3a3a; --ink:#ffffff; --muted:#b9b9b9;
   --red:#ed1c24; --red-btn:#d0021b; --red-deep:#9e1720; --red-deeper:#772626;
@@ -55,7 +58,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
 .seg label:has(input:checked) small{color:#fff}
 .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 label.f{display:grid;gap:4px;font:700 13px/1.2 var(--body);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-input[type=number],input[type=text],input[type=email],input[type=tel],select,textarea{font:500 16px var(--body);color:#111;background:#fff;border:0;border-radius:0;padding:10px 12px;width:100%;min-width:0;caret-color:var(--red)}
+input[type=number],select,textarea{font:500 16px var(--body);color:#111;background:#fff;border:0;border-radius:0;padding:10px 12px;width:100%;min-width:0;caret-color:var(--red)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--red);outline-offset:0}
 textarea{min-height:80px;resize:vertical}
 input[type=checkbox]{accent-color:var(--red-btn);width:18px;height:18px}
@@ -80,23 +83,20 @@ ul{list-style:none;margin:0;padding:0}
 .formpanel h2{color:#000}
 .formpanel .note{color:#444;margin:0 0 14px}
 .formpanel label.f{color:#000;font-weight:700}
-.formpanel input,.formpanel select,.formpanel textarea{box-shadow:inset 0 0 0 1px #d0d0d0}
+.formpanel select,.formpanel textarea{box-shadow:inset 0 0 0 1px #d0d0d0}
 .formpanel :focus-visible{outline-color:#000}
-label.f.req{display:block}
-label.f.req input{margin-top:4px}
-.req::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px;vertical-align:1px}
 .fgroup{border-top:6px solid var(--paper-line);padding-top:12px;margin-top:14px}
 .sumpanel{min-width:0}
 pre{font:500 14px/1.5 var(--body);font-variant-numeric:tabular-nums;color:#fff;background:#000;padding:18px;margin:0;overflow-x:auto;white-space:pre-wrap;max-height:420px;overflow-y:auto}
-form{display:grid;gap:10px;min-width:0}
-.submit{background:transparent;color:var(--red-btn);border:2px solid var(--red-btn);font:700 20px/1 var(--body);text-transform:uppercase;letter-spacing:.04em;padding:16px 22px;cursor:pointer;transition:background-color .2s,color .2s}
-.submit::after{content:"+";margin-left:28px;font-size:32px;font-weight:300;line-height:0;vertical-align:-3px}
-.submit:hover{background:var(--red-btn);color:#fff}
 .formpanel .btn{background:var(--bg)}
 .formpanel .btn:hover{background:#000}
-#msg{min-height:1.4em;font-weight:500;margin:0}
+#png{background:var(--red-btn);font-size:16px;padding:14px 20px}
+#png:hover{background:var(--red-deep)}
+#msg{min-height:1.4em;font-weight:500;margin:10px 0 0}
 .note{font-size:.9rem}
 </style>
+</head>
+<body>
 
 <header class="top"><div class="in">
   <h1>Bay Builder</h1><span class="tag">Beta</span>
@@ -129,7 +129,7 @@ form{display:grid;gap:10px;min-width:0}
     <div class="sec">
       <h2><span class="step">1</span>What will the bay test?</h2>
       <div class="seg" role="radiogroup">
-        <label><input type="radio" name="cls" value="1" id="cls1"><b>Class 1 &amp; 2</b><small>Motorcycles</small></label>
+        <label><input type="radio" name="cls" value="1"><b>Class 1 &amp; 2</b><small>Motorcycles</small></label>
         <label><input type="radio" name="cls" value="4" checked><b>Class 4</b><small>Cars and light vans</small></label>
         <label><input type="radio" name="cls" value="47"><b>Class 4 &amp; 7</b><small>Cars and vans</small></label>
       </div>
@@ -165,21 +165,17 @@ form{display:grid;gap:10px;min-width:0}
 
 <section class="rvband" aria-labelledby="rv"><div class="review in">
   <div class="formpanel">
-    <h2 id="rv"><span class="step">5</span>Review your layout</h2>
+    <h2 id="rv"><span class="step">5</span>Save your layout</h2>
     <p class="note">This is an illustrative configuration. Sizes are estimates and need checking by a technician before any quote.</p>
     <label class="f">Type of test lane
       <select id="lane"><option>Standard bay</option><option>ATL or OPTL</option><option>Not sure yet</option></select>
     </label>
     <label class="f fgroup">Project notes<textarea id="notes" placeholder="Anything we should know about the building, floor or timing"></textarea></label>
-    <form id="form" class="fgroup">
-      <div class="fields">
-        <label class="f req">Name<input type="text" id="fname" required autocomplete="name"></label>
-        <label class="f req">Email<input type="email" id="femail" required autocomplete="email"></label>
-        <label class="f">Phone (optional)<input type="tel" id="fphone" autocomplete="tel"></label>
-      </div>
-      <div class="row2" style="margin:6px 0 0"><button class="submit" type="submit">Request a review</button><button class="btn" type="button" id="copy">Copy summary</button></div>
-      <p id="msg" role="status"></p>
-    </form>
+    <div class="row2 fgroup">
+      <button class="btn" type="button" id="png">Download as PNG</button>
+      <button class="btn" type="button" id="copy">Copy summary</button>
+    </div>
+    <p id="msg" role="status"></p>
   </div>
   <div class="sumpanel">
     <h2>Summary</h2>
@@ -400,7 +396,13 @@ function room(){
  buildRoom();sync();fit(curView);}
 ['#w','#l','#h','#door','#drive'].forEach(s=>$(s).onchange=room);
 ['#lane','#notes'].forEach(s=>$(s).oninput=ui);
-$('#form').onsubmit=e=>{e.preventDefault();$('#msg').textContent='Nothing has been sent. This version has no server, so copy the summary and email it to the team.'};
+
+// download the current 3D view as a PNG (selection highlight hidden for the shot)
+$('#png').onclick=()=>{
+ if(!ok3d){$('#msg').textContent='The 3D view is turned off in this browser, so there is no picture to save.';return}
+ const s=state.sel;state.sel=null;paint();R_.render(scene,camera);
+ const a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download='bay-layout.png';a.click();
+ state.sel=s;paint();$('#msg').textContent='Picture saved.';};
 $('#copy').onclick=()=>{const t=$('#sum').textContent;
  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>$('#msg').textContent='Summary copied.').catch(()=>{
   const r=document.createRange();r.selectNodeContents($('#sum'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#msg').textContent='Press Ctrl+C or Cmd+C to copy the selected summary.'})};
@@ -412,10 +414,10 @@ if(ok3d){let first=true;
  (function loop(){requestAnimationFrame(loop);if(dirty){dirty=false;R_.render(scene,camera)}})();
 }
 
-// starting layout: a Class 4 bay with a car on the lift
 renderCat();buildRoom();
 sync();
 })();
 </script>
 
-</body></html>
+</body>
+</html>
